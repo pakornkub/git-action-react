@@ -41,4 +41,6 @@ export default {
 # Jenkinsfile Config
 
 1. Deploy to IIS : Change mode "production" or "staging" for deploy to web server
+2. ??? Set case git private
+3. ??? Set jenkins for production server
 
