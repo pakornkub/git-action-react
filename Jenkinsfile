@@ -2,11 +2,11 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout Code') {
-            steps {
-                git branch: 'main', url: 'https://github.com/pakornkub/git-action-react.git'
-            }
-        }
+        // stage('Checkout Code') {
+        //     steps {
+        //         git branch: 'main', url: 'https://github.com/pakornkub/git-action-react.git'
+        //     }
+        // }
         
         stage('Check Node.js Version') {
             steps {
@@ -36,7 +36,7 @@ pipeline {
                     Copy-Item -Path ".\\dist\\*" -Destination $destination -Recurse -Force
                     Copy-Item -Path ".\\web.config" -Destination $destination -Force
                 '''
-                
+
             }
             
                 
