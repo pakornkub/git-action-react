@@ -18,15 +18,36 @@ pipeline {
         // สร้าง stage ใหม่เพื่อโหลดไฟล์ .env และกำหนดค่าให้ตัวแปร DESTINATION โดยอ่านจากไฟล์ .env
         stage('Load ENV') {
             steps {
-                script {
-                    def envFile = readFile(ENV_FILE).trim()
+                  script {
+                    def envFilePath = '.env.production'
+                    
+                    // ตรวจสอบว่าไฟล์มีอยู่จริง
+                    if (!fileExists(envFilePath)) {
+                        error "❌ ไฟล์ ${envFilePath} ไม่พบ! ตรวจสอบว่าไฟล์นี้มีอยู่ใน repo หรือ workspace"
+                    }
+                    
+                    // อ่านไฟล์
+                    def envFile = readFile(envFilePath).trim()
+                    echo "📄 อ่านค่า .env.production: \n${envFile}"
+
+                    // แปลงเป็นตัวแปร
                     envFile.split('\n').each { line ->
-                        def (key, value) = line.tokenize('=')
-                        if (key == "VITE_DESTINATION") {
-                            env.DESTINATION = value.trim() // กำหนดค่าให้ DESTINATION
+                        def keyValue = line.tokenize('=')
+                        if (keyValue.size() == 2) {
+                            def key = keyValue[0].trim()
+                            def value = keyValue[1].trim()
+                            
+                            if (key == "VITE_DESTINATION") {
+                                env.DESTINATION = value
+                            }
                         }
                     }
-                    echo "Deploying to: D:\\inetpub\\wwwroot\\${env.DESTINATION}\\"
+                    
+                    if (!env.DESTINATION) {
+                        error "❌ env.DESTINATION ไม่ถูกตั้งค่า! ตรวจสอบค่า VITE_DESTINATION ใน .env.production"
+                    } else {
+                        echo "✅ DEPLOY PATH: D:\\inetpub\\wwwroot\\${env.DESTINATION}\\"
+                    }
                 }
             }
         }
