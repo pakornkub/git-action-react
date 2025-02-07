@@ -80,6 +80,7 @@ pipeline {
 
         // สร้าง stage ใหม่เพื่อ Deploy ไปที่ IIS
         stage('Deploy to IIS') {
+            // when { expression { env.BUILD_MODE == "production" } } // ให้ทำเฉพาะเมื่อ BUILD_MODE เป็น production
             steps {
                 
                 // คัดลอกไฟล์ build ไปที่ IIS
