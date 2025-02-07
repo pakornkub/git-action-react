@@ -23,12 +23,12 @@ pipeline {
                     
                     // ตรวจสอบว่าไฟล์มีอยู่จริง
                     if (!fileExists(envFilePath)) {
-                        error "❌ ไฟล์ ${envFilePath} ไม่พบ! ตรวจสอบว่าไฟล์นี้มีอยู่ใน repo หรือ workspace"
+                        error "File ${envFilePath} not found! Please check if this file exists in repo or workspace"
                     }
                     
                     // อ่านไฟล์
                     def envFile = readFile(envFilePath).trim()
-                    echo "📄 อ่านค่า .env.production: \n${envFile}"
+                    echo "Reading .env.production: \n${envFile}"
 
                     // แปลงเป็นตัวแปร
                     envFile.split('\n').each { line ->
@@ -44,7 +44,7 @@ pipeline {
                     }
                     
                     if (!env.DESTINATION) {
-                        error "❌ env.DESTINATION ไม่ถูกตั้งค่า! ตรวจสอบค่า VITE_DESTINATION ใน .env.production"
+                      error "env.DESTINATION is not set! Please check VITE_DESTINATION value in .env.production"
                     } else {
                         echo "✅ DEPLOY PATH: D:\\inetpub\\wwwroot\\${env.DESTINATION}\\"
                     }
