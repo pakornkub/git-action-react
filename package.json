@@ -8,7 +8,7 @@
     "build": "tsc && vite build --base=$npm_config_base",
     "build:staging": "tsc && vite build --base=$npm_config_base --mode=staging",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview --base=$npm_config_base"
+    "preview": "vite preview"
   },
   "dependencies": {
     "react": "^18.2.0",
