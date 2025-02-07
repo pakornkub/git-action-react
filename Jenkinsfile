@@ -42,4 +42,10 @@ pipeline {
                 
         }
     }
+
+    post {
+        always {
+            cleanWs()  // ล้าง Workspace หลังจากรันทุกครั้ง
+        }
+    }
 }
