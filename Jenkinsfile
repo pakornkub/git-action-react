@@ -31,22 +31,13 @@ pipeline {
                     echo "Reading .env.production: \n${envFile}"
 
                     // แปลงเป็นตัวแปร
-                    envFile.split('\n').each { line ->
-                        def keyValue = line.tokenize('=')
-                        if (keyValue.size() == 2) {
-                            def key = keyValue[0].trim()
-                            def value = keyValue[1].trim()
-                            
-                            if (key == "VITE_DESTINATION") {
-                                env.DESTINATION = value
-                            }
-                        }
-                    }
+                    def value = envFile.split('=')[1].trim()
+                    env.DESTINATION = value
                     
                     if (!env.DESTINATION) {
                       error "env.DESTINATION is not set! Please check VITE_DESTINATION value in .env.production"
                     } else {
-                        echo "✅ DEPLOY PATH: D:\\inetpub\\wwwroot\\${env.DESTINATION}\\"
+                        echo "DEPLOY PATH: D:\\inetpub\\wwwroot\\${env.DESTINATION}\\"
                     }
                 }
             }
