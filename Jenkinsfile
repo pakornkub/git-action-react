@@ -71,7 +71,7 @@ pipeline {
         stage('Build React App') {
             steps {
                 script {
-                    def buildCommand = BUILD_MODE == "staging" ? "npm run build --base=/${env.DESTINATION}/ -- --mode staging" : "npm run build --base=/${env.DESTINATION}/"
+                    def buildCommand = BUILD_MODE == "staging" ? "npm run build -- --base=/${env.DESTINATION}/ -- --mode staging" : "npm run build -- --base=/${env.DESTINATION}/"
                     echo "Running build command: ${buildCommand}"
                     powershell buildCommand
                 }
