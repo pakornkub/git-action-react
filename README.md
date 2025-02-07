@@ -28,3 +28,12 @@ export default {
 - Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
 - Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
 - Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+
+# Vite Command#
+
+1. `npm run build -- --base=/git-action-react/` = build to production
+2. `npm run build:staging -- --base=/git-action-react/` = build to staging (test)
+3. `npm run dev -- --base=/git-action-react/` = start app for dev (localhost)
+4. `npm run test` = start vitest
+5. `npx vitest --ui` = start vitest (ui)
+6. `npm run preview -- --base=/git-action-react/` = start app on dist after build for preview (localhost)
