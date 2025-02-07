@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        BUILD_MODE = "staging"  // ค่าเริ่มต้นเป็น production (สามารถกำหนด staging ได้)
+        BUILD_MODE = "production"  // ค่าเริ่มต้นเป็น production (สามารถกำหนด staging ได้)
     }
 
     stages {
