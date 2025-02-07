@@ -32,17 +32,11 @@ pipeline {
                 
                 // คัดลอกไฟล์ build ไปที่ IIS
                 powershell '''
-                    $source = ".\\dist\\*"
                     $destination = "D:\\inetpub\\wwwroot\\git-action-react\\"
-                    Copy-Item -Path $source -Destination $destination -Recurse -Force
+                    Copy-Item -Path ".\\dist\\*" -Destination $destination -Recurse -Force
+                    Copy-Item -Path ".\\web.config" -Destination $destination -Force
                 '''
                 
-                // คัดลอกไฟล์ web.config ไปยัง IIS
-                powershell '''
-                    $webConfigSource = ".\\web.config"
-                    $webConfigDestination = "D:\\inetpub\\wwwroot\\git-action-react\\"
-                    Copy-Item -Path $webConfigSource -Destination $webConfigDestination -Force
-                '''
             }
             
                 
