@@ -42,6 +42,7 @@ pipeline {
                         error "DESTINATION is not set! Please check VITE_DESTINATION value in .env.production"
                     } else {
                         echo "DEPLOY PATH: D:\\inetpub\\wwwroot\\${DESTINATION}\\"
+                        env.DESTINATION = DESTINATION  // ตั้งค่าให้ใช้ใน Pipeline
                     }
                 }
             }
@@ -82,8 +83,10 @@ pipeline {
 
                 // คัดลอกไฟล์ build ไปที่ IIS โดยใช้ตัวแปร DESTINATION
                 script {
-                    def deployPath = "D:\\inetpub\\wwwroot\\${DESTINATION}\\"
+                    def deployPath = "D:\\inetpub\\wwwroot\\${env.DESTINATION}\\"
                     echo "Deploying to ${deployPath}"
+
+                    // ใช้ PowerShell คัดลอกไฟล์
                     powershell """
                         \$destination = "${deployPath}"
                         Copy-Item -Path ".\\dist\\*" -Destination \$destination -Recurse -Force
