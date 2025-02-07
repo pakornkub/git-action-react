@@ -2,33 +2,33 @@ pipeline {
     agent any
 
     environment {
-        BUILD_MODE = "staging"  // ค่าเริ่มต้นเป็น production (สามารถกำหนด staging ได้)
+        BUILD_MODE = "production"  // default value is production (can be set to staging)
     }
 
     stages {
-        // สร้าง stage ใหม่เพื่อ Checkout โค้ดจาก GitHub
+        // Create new stage to checkout code from GitHub
         // stage('Checkout Code') {
         //     steps {
         //         git branch: 'main', url: 'https://github.com/pakornkub/git-action-react.git'
         //     }
         // }
 
-        // สร้าง stage ใหม่เพื่อโหลดไฟล์ .env และกำหนดค่าให้ตัวแปร DESTINATION โดยอ่านจากไฟล์ .env
+        // Create new stage to load .env file and set DESTINATION variable from .env
         stage('Load ENV') {
             steps {
                 script {
-                    def envFilePath = ".env.${BUILD_MODE}"  // กำหนดชื่อไฟล์ .env ตาม BUILD_MODE
+                    def envFilePath = ".env.${BUILD_MODE}"  // Set .env filename based on BUILD_MODE
                     
-                    // ตรวจสอบว่าไฟล์ .env ที่ต้องใช้มีอยู่จริ
+                    // Check if the required .env file exists
                     if (!fileExists(envFilePath)) {
                         error "File ${envFilePath} not found! Please check if this file exists in repo or workspace"
                     }
                     
-                    // อ่านไฟล์ .env
+                    // Read .env file
                     def envFile = readFile(envFilePath).trim()
                     echo "Reading ${envFilePath}: \n${envFile}"
 
-                    // กำหนดค่า DESTINATION จากไฟล์ .env
+                    // Set DESTINATION from .env file
                     def DESTINATION = ""
                     envFile.split('\n').each { line ->
                         def keyValue = line.tokenize('=')
@@ -36,8 +36,8 @@ pipeline {
                             def key = keyValue[0].trim()
                             def value = keyValue[1].trim()
                             
-                            if (key == "VITE_DESTINATION") {
-                                DESTINATION = value // ใช้ตัวแปร Groovy
+                            if (key == "VITE_BASE_PATH") {
+                                DESTINATION = value.replace("/", "") // Remove forward slashes
                             }
                         }
                     }
@@ -46,13 +46,13 @@ pipeline {
                         error "DESTINATION is not set! Please check VITE_DESTINATION value in ${envFilePath}"
                     } else {
                         echo "DEPLOY PATH: D:\\inetpub\\wwwroot\\${DESTINATION}\\"
-                        env.DESTINATION = DESTINATION  // ตั้งค่าให้ใช้ใน Pipeline
+                        env.DESTINATION = DESTINATION  // Set for use in Pipeline
                     }
                 }
             }
         }
         
-        // สร้าง stage ใหม่เพื่อตรวจสอบ Node.js และ npm ว่าใช้งานได้หรือไม่
+        // Create new stage to check Node.js and npm availability
         // stage('Check Node.js Version') {
         //     steps {
         //         powershell 'node -v'   // ตรวจสอบว่า Node.js ใช้งานได้
@@ -60,59 +60,56 @@ pipeline {
         //     }
         // }
 
-        //  สร้าง stage ใหม่เพื่อ Install Dependencies
+        // Create new stage to Install Dependencies
         stage('Install Dependencies') {
             steps {
                 powershell 'npm install'
             }
         }
 
-        // สร้าง stage ใหม่เพื่อ Build React App
+        // Create new stage for Building React App
         stage('Build React App') {
             steps {
                 script {
-                    def buildCommand = BUILD_MODE == "staging" ? "npm run build:staging -- --base=/${env.DESTINATION}/" : "npm run build -- --base=/${env.DESTINATION}/"
+                    def buildCommand = BUILD_MODE == "staging" ? "npm run build:staging" : "npm run build"
                     echo "Running build command: ${buildCommand}"
                     powershell buildCommand
                 }
             }
         }
 
-        // สร้าง stage ใหม่เพื่อ Deploy ไปที่ IIS
+        // Create new stage to Deploy to IIS
         stage('Deploy to IIS') {
-            // when { expression { env.BUILD_MODE == "production" } } // ให้ทำเฉพาะเมื่อ BUILD_MODE เป็น production
+            // when { expression { env.BUILD_MODE == "production" } } // Run only when BUILD_MODE is production
             steps {
                 
-                // คัดลอกไฟล์ build ไปที่ IIS
+                // Copy build files to IIS using powershell
                 // powershell '''
                 //     $destination = "D:\\inetpub\\wwwroot\\git-action-react\\"
                 //     Copy-Item -Path ".\\dist\\*" -Destination $destination -Recurse -Force
                 //     Copy-Item -Path ".\\web.config" -Destination $destination -Force
                 // '''
 
-                // คัดลอกไฟล์ build ไปที่ IIS โดยใช้ตัวแปร DESTINATION
+                // Copy build files to IIS using DESTINATION variable
                 script {
                     def deployPath = "D:\\inetpub\\wwwroot\\${env.DESTINATION}\\"
                     echo "Deploying to ${deployPath}"
 
-                    // ใช้ PowerShell คัดลอกไฟล์
+                    // Copy build files to IIS using powershell
                     powershell """
                         \$destination = "${deployPath}"
                         Copy-Item -Path ".\\dist\\*" -Destination \$destination -Recurse -Force
                         Copy-Item -Path ".\\web.config" -Destination \$destination -Force
                     """
                 }
-
-            }
-            
-                
+            }    
         }
     }
 
-    // สร้าง post สำหรับล้าง Workspace หลังจากรันทุกครั้ง
+    // Create post section to clean workspace after every run
     post {
         always {
-            cleanWs()  // ล้าง Workspace หลังจากรันทุกครั้ง
+            cleanWs()  // Clean workspace after every run
         }
     }
 }

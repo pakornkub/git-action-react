@@ -31,12 +31,12 @@ export default {
 
 # Vite Command
 
-1. `npm run build -- --base=/git-action-react/` = build to production
-2. `npm run build:staging -- --base=/git-action-react-staging/` = build to staging (test)
-3. `npm run dev` = start app for dev (localhost)
-4. `npm run test` = start vitest
-5. `npx vitest --ui` = start vitest (ui)
+1. `npm run dev` = start app for dev (localhost)
+2. `npm run build` = build to production
+3. `npm run build:staging` = build to staging (test)
 6. `npm run preview` = start app on dist after build for preview (localhost)
+6. `npm run test` = start vitest
+7. `npx vitest --ui` = start vitest (ui)
 
 # Jenkinsfile Config
 
