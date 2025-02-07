@@ -33,15 +33,15 @@ pipeline {
                             def value = keyValue[1].trim()
                             
                             if (key == "VITE_DESTINATION") {
-                                DESTINATION = value // ใช้ตัวแปร Groovy ปกติแทน env.DESTINATION
+                                DESTINATION = value // ใช้ตัวแปร Groovy
                             }
                         }
                     }
                     
-                    if (!env.DESTINATION) {
-                        error "env.DESTINATION is not set! Please check VITE_DESTINATION value in .env.production"
+                    if (!DESTINATION) {
+                        error "DESTINATION is not set! Please check VITE_DESTINATION value in .env.production"
                     } else {
-                        echo "DEPLOY PATH: D:\\inetpub\\wwwroot\\${env.DESTINATION}\\"
+                        echo "DEPLOY PATH: D:\\inetpub\\wwwroot\\${DESTINATION}\\"
                     }
                 }
             }
