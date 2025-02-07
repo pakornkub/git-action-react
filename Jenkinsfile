@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        BUILD_MODE = "staging"  // default value is production (can be set to staging)
+        BUILD_MODE = "production"  // default value is production (can be set to staging)
     }
 
     stages {

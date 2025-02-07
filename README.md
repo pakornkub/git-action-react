@@ -40,5 +40,5 @@ export default {
 
 # Jenkinsfile Config
 
-1. edit mode in environment for build case "production" or "staging"
+1. Deploy to IIS : Change mode "production" or "staging" for deploy to web server
 
