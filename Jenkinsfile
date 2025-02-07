@@ -1,12 +1,6 @@
 pipeline {
     agent any
 
-    // สร้างตัวแปร environment สำหรับกำหนดค่าต่างๆ ที่ต้องใช้ในการ Deploy
-    environment {
-        ENV_FILE = '.env.production'  // กำหนดไฟล์ .env ที่ต้องใช้
-        DESTINATION = ''  // ตัวแปรนี้จะถูกกำหนดจากไฟล์ .env
-    }
-
     stages {
         // สร้าง stage ใหม่เพื่อ Checkout โค้ดจาก GitHub
         // stage('Checkout Code') {
@@ -18,7 +12,7 @@ pipeline {
         // สร้าง stage ใหม่เพื่อโหลดไฟล์ .env และกำหนดค่าให้ตัวแปร DESTINATION โดยอ่านจากไฟล์ .env
         stage('Load ENV') {
             steps {
-                  script {
+                script {
                     def envFilePath = '.env.production'
                     
                     // ตรวจสอบว่าไฟล์มีอยู่จริง
@@ -31,11 +25,21 @@ pipeline {
                     echo "Reading .env.production: \n${envFile}"
 
                     // แปลงเป็นตัวแปร
-                    def value = envFile.split('=')[1].trim()
-                    env.DESTINATION = value
+                    def DESTINATION = ""
+                    envFile.split('\n').each { line ->
+                        def keyValue = line.tokenize('=')
+                        if (keyValue.size() == 2) {
+                            def key = keyValue[0].trim()
+                            def value = keyValue[1].trim()
+                            
+                            if (key == "VITE_DESTINATION") {
+                                DESTINATION = value // ใช้ตัวแปร Groovy ปกติแทน env.DESTINATION
+                            }
+                        }
+                    }
                     
                     if (!env.DESTINATION) {
-                      error "env.DESTINATION is not set! Please check VITE_DESTINATION value in .env.production"
+                        error "env.DESTINATION is not set! Please check VITE_DESTINATION value in .env.production"
                     } else {
                         echo "DEPLOY PATH: D:\\inetpub\\wwwroot\\${env.DESTINATION}\\"
                     }
@@ -78,11 +82,12 @@ pipeline {
 
                 // คัดลอกไฟล์ build ไปที่ IIS โดยใช้ตัวแปร DESTINATION
                 script {
-                    def deployPath = "D:\\inetpub\\wwwroot\\${env.DESTINATION}\\"
+                    def deployPath = "D:\\inetpub\\wwwroot\\${DESTINATION}\\"
                     echo "Deploying to ${deployPath}"
                     powershell """
-                        Copy-Item -Path ".\\dist\\*" -Destination "${deployPath}" -Recurse -Force
-                        Copy-Item -Path ".\\web.config" -Destination "${deployPath}" -Force
+                        \$destination = "${deployPath}"
+                        Copy-Item -Path ".\\dist\\*" -Destination \$destination -Recurse -Force
+                        Copy-Item -Path ".\\web.config" -Destination \$destination -Force
                     """
                 }
 
