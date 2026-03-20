@@ -7,11 +7,11 @@ pipeline {
 
     stages {
         // Create new stage to checkout code from GitHub
-        // stage('Checkout Code') {
-        //     steps {
-        //         git branch: 'main', url: 'https://github.com/pakornkub/git-action-react.git'
-        //     }
-        // }
+        stage('Checkout Code') {
+            steps {
+                git branch: 'main', credentialsId: 'github-cred-pakornwo', url: 'https://github.com/pakornkub/git-action-react.git'
+            }
+        }
 
         // Create new stage to load .env file and set DESTINATION variable from .env
         stage('Load ENV') {
